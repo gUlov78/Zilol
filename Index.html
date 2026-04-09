@@ -1,0 +1,560 @@
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zilola G | Invitation</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #fdf8f4;
+            --text-primary: #4a4a4a;
+            --text-secondary: #8c8c8c;
+            --gold: #d4b47d;
+            --gold-light: #e6d5b8;
+            --pink-soft: #f2d9df;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: var(--font-serif);
+        }
+
+        /* Custom Scrollbar Hide */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        /* Intro Layer */
+        #intro-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 50;
+            background: linear-gradient(to bottom, #eef2f3, #fdf8f4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .cloud-img {
+            position: absolute;
+            opacity: 0.8;
+            filter: blur(2px);
+        }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 40px -10px rgba(212, 180, 125, 0.15);
+        }
+
+        /* Text Gradients */
+        .text-gold-gradient {
+            background: linear-gradient(135deg, #b98d58 0%, #d4b47d 50%, #e6d5b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Petals */
+        .petal {
+            position: fixed;
+            top: -50px;
+            background: radial-gradient(circle at 30% 30%, #f2d9df, #eac9d2);
+            border-radius: 100% 0 100% 0;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        /* Music Button */
+        .music-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 60;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--gold-light);
+        }
+        .music-btn.playing {
+            animation: pulse-gold 2s infinite;
+        }
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(212, 180, 125, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 180, 125, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 180, 125, 0); }
+        }
+
+        /* Loader Flash */
+        #flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 45;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Calendar Grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+        .calendar-day {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            color: #8c8c8c;
+            padding: 8px;
+        }
+        .calendar-day.active {
+            background-color: var(--pink-soft);
+            color: #8c5a68;
+            border-radius: 50%;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(242, 217, 223, 0.5);
+        }
+        .calendar-header {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #b0b0b0;
+            margin-bottom: 10px;
+        }
+
+        /* Reveal Classes */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-[#f2d9df] selection:text-[#8c5a68]">
+
+    <!-- Audio Element (Hidden) -->
+    <!-- Using a placeholder gentle piano track -->
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-piano-music-24886.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Music Control -->
+    <div class="music-btn" id="music-toggle" onclick="toggleMusic()">
+        <svg id="icon-play" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4b47d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <svg id="icon-pause" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4b47d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+    </div>
+
+    <!-- Flash Overlay -->
+    <div id="flash-overlay"></div>
+
+    <!-- INTRO LAYER -->
+    <div id="intro-layer">
+        <!-- Clouds Background -->
+        <img src="https://image.qwenlm.ai/public_source/209cf5e9-20e9-4061-94c0-6b0140f2c496/11b28b777-f624-49c0-bd3e-35e3a34874e4.png" class="w-full h-full object-cover cloud-bg opacity-60" alt="Clouds">
+        
+        <!-- Z & O Sign -->
+        <div id="intro-sign" class="absolute inset-0 flex flex-col items-center justify-center opacity-0 pointer-events-none">
+            <h1 class="text-7xl md:text-9xl serif text-gold-gradient tracking-wide drop-shadow-lg">Z <span class="text-5xl md:text-7xl align-middle">&</span> O</h1>
+            <div class="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#d4b47d] to-transparent mt-6 opacity-80"></div>
+        </div>
+
+        <!-- Bismillah Text -->
+        <div id="intro-bismillah" class="absolute inset-0 flex flex-col items-center justify-center px-6 text-center opacity-0 pointer-events-none">
+            <p class="serif text-3xl md:text-4xl text-[#8c5a68] mb-4 leading-relaxed">С именем Аллаха</p>
+            <p class="serif text-xl md:text-2xl text-[#a08088] italic">Милостивого и Милосердного</p>
+            <div class="w-32 h-[1px] bg-[#d4b47d] mt-8 scale-x-0 origin-center" id="bismillah-line"></div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content" class="relative w-full max-w-md mx-auto bg-[#fdf8f4] min-h-screen shadow-2xl shadow-[#efe4d8]/50 overflow-hidden opacity-0">
+        
+        <!-- Hero Section -->
+        <section class="relative pt-12 pb-16 px-6 flex flex-col items-center text-center">
+            <!-- Photo Container -->
+            <div class="relative mb-10 reveal-up hero-photo-container">
+                <div class="w-64 h-64 md:w-72 md:h-72 rounded-full overflow-hidden border-4 border-white shadow-[0_20px_50px_-10px_rgba(212,180,125,0.3)] relative z-10">
+                    <img src="https://image.qwenlm.ai/public_source/209cf5e9-20e9-4061-94c0-6b0140f2c496/1cccd8b65-caac-449e-afd7-42d1ccbe4b2b.png" alt="Zilola" class="w-full h-full object-cover">
+                </div>
+                <!-- Decorative Heart -->
+                <div class="absolute -top-4 -right-4 z-20 animate-float">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="#f2d9df" stroke="#d4b47d" stroke-width="1">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </div>
+                <!-- Gold Ring Decoration -->
+                <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-80 h-80 border border-[#d4b47d]/20 rounded-full -z-0"></div>
+            </div>
+
+            <!-- Name -->
+            <div class="mb-6 reveal-up">
+                <h2 class="text-4xl serif text-[#4a4a4a] tracking-wide">Zilola <span class="text-[#d4b47d]">G</span></h2>
+            </div>
+
+            <!-- Main Invite Text -->
+            <div class="space-y-4 mb-8 reveal-up">
+                <h3 class="text-2xl md:text-3xl serif text-[#8c5a68] leading-tight">
+                    С радостью в сердце<br>приглашаем вас<br>на особенный вечер
+                </h3>
+                <p class="text-sm md:text-base text-[#8c8c8c] font-light max-w-xs mx-auto leading-relaxed pt-4">
+                    Девичник (чойгаштак), посвящённый тёплому, красивому и по-настоящему душевному дню.
+                </p>
+            </div>
+        </section>
+
+        <!-- Time Section -->
+        <section class="py-12 px-6 text-center bg-gradient-to-b from-transparent to-[#fffaf7] reveal-up">
+            <div class="inline-block glass-card px-10 py-8 rounded-[40px]">
+                <p class="text-xs uppercase tracking-[0.2em] text-[#b0b0b0] mb-2">Начало вечера</p>
+                <h2 class="text-6xl serif text-gold-gradient font-light">17:30</h2>
+            </div>
+        </section>
+
+        <!-- Calendar Section -->
+        <section class="py-16 px-6 flex flex-col items-center reveal-up">
+            <div class="glass-card p-8 rounded-[30px] w-full max-w-xs shadow-lg">
+                <h3 class="text-2xl serif text-[#4a4a4a] mb-6 text-center">Апрель 2026</h3>
+                
+                <div class="calendar-header grid grid-cols-7">
+                    <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+                </div>
+                
+                <div class="calendar-grid">
+                    <!-- Empty slots for start of month (April 1 2026 is Wednesday) -->
+                    <div class="calendar-day"></div>
+                    <div class="calendar-day"></div>
+                    
+                    <!-- Days -->
+                    <div class="calendar-day">1</div>
+                    <div class="calendar-day">2</div>
+                    <div class="calendar-day">3</div>
+                    <div class="calendar-day">4</div>
+                    <div class="calendar-day">5</div>
+                    <div class="calendar-day">6</div>
+                    <div class="calendar-day">7</div>
+                    <div class="calendar-day">8</div>
+                    <div class="calendar-day">9</div>
+                    <div class="calendar-day">10</div>
+                    <div class="calendar-day">11</div>
+                    <div class="calendar-day">12</div>
+                    <div class="calendar-day">13</div>
+                    <div class="calendar-day">14</div>
+                    <div class="calendar-day active">15</div>
+                    <div class="calendar-day">16</div>
+                    <div class="calendar-day">17</div>
+                    <div class="calendar-day">18</div>
+                    <div class="calendar-day">19</div>
+                    <div class="calendar-day">20</div>
+                    <div class="calendar-day">21</div>
+                    <div class="calendar-day">22</div>
+                    <div class="calendar-day">23</div>
+                    <div class="calendar-day">24</div>
+                    <div class="calendar-day">25</div>
+                    <div class="calendar-day">26</div>
+                    <div class="calendar-day">27</div>
+                    <div class="calendar-day">28</div>
+                    <div class="calendar-day">29</div>
+                    <div class="calendar-day">30</div>
+                </div>
+
+                <!-- Rings Icon Bottom -->
+                <div class="flex justify-center mt-6 opacity-50">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#d4b47d" stroke-width="1.5">
+                        <circle cx="8" cy="12" r="6"></circle>
+                        <circle cx="16" cy="12" r="6"></circle>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Location Section -->
+        <section class="py-12 px-6 reveal-up">
+            <div class="glass-card rounded-[30px] overflow-hidden">
+                <!-- Location Image Placeholder -->
+                <div class="h-48 w-full relative">
+                    <img src="https://image.qwenlm.ai/public_source/209cf5e9-20e9-4061-94c0-6b0140f2c496/1f9f72502-6a00-476c-8c68-e540c7c31aff.png" alt="Restaurant Interior" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
+                
+                <div class="p-8 text-center">
+                    <h3 class="text-3xl serif text-[#4a4a4a] mb-2">Ресторан Якассарой</h3>
+                    <p class="text-sm text-[#8c8c8c] mb-6 uppercase tracking-wider">Ориентир: Маркази Ош</p>
+                    
+                    <a href="https://yandex.tj/maps/-/CPrM5Lou" target="_blank" class="inline-flex items-center justify-center w-full py-4 bg-gradient-to-r from-[#d4b47d] to-[#c9a96e] text-white rounded-[20px] font-medium tracking-wide shadow-lg shadow-[#d4b47d]/30 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                        <span>Открыть карту</span>
+                        <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer / Final Message -->
+        <footer class="py-20 px-8 text-center relative overflow-hidden">
+            <!-- Falling Petals Container -->
+            <div id="petals-container" class="absolute inset-0 pointer-events-none"></div>
+
+            <div class="relative z-10 glass-card p-8 rounded-[30px] reveal-up">
+                <p class="serif text-xl md:text-2xl text-[#8c5a68] leading-relaxed mb-6">
+                    Пусть этот вечер будет тёплым,<br>красивым и по-настоящему душевным ✨
+                </p>
+                <p class="text-[#4a4a4a] font-medium">Будем рады видеть вас 🤍</p>
+            </div>
+            
+            <div class="mt-12 text-[#b0b0b0] text-xs font-light tracking-widest uppercase">
+                Z & O • 2026
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // --- Configuration ---
+        const TIMINGS = {
+            cloudsDuration: 5000,
+            signDuration: 3000,
+            bismillahDuration: 3000,
+            flashDuration: 600
+        };
+
+        // --- Elements ---
+        const introLayer = document.getElementById('intro-layer');
+        const introSign = document.getElementById('intro-sign');
+        const introBismillah = document.getElementById('intro-bismillah');
+        const bismillahLine = document.getElementById('bismillah-line');
+        const flashOverlay = document.getElementById('flash-overlay');
+        const mainContent = document.getElementById('main-content');
+        const musicBtn = document.getElementById('music-toggle');
+        const audio = document.getElementById('bg-music');
+        const iconPlay = document.getElementById('icon-play');
+        const iconPause = document.getElementById('icon-pause');
+
+        // --- State ---
+        let isPlaying = false;
+
+        // --- Music Logic ---
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                iconPlay.classList.remove('hidden');
+                iconPause.classList.add('hidden');
+                musicBtn.classList.remove('playing');
+            } else {
+                audio.play().catch(e => console.log("Audio play failed:", e));
+                iconPlay.classList.add('hidden');
+                iconPause.classList.remove('hidden');
+                musicBtn.classList.add('playing');
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // --- Intro Sequence ---
+        window.addEventListener('load', () => {
+            initClouds();
+            runIntroSequence();
+            initScrollAnimations();
+            createPetals();
+        });
+
+        function runIntroSequence() {
+            const tl = gsap.timeline();
+
+            // 1. Clouds are already visible via CSS
+            
+            // 2. Show Z & O (after 5s)
+            tl.to(introSign, {
+                opacity: 1,
+                duration: 1.5,
+                delay: 5, // Wait for clouds
+                ease: "power2.out"
+            })
+            // Animate letters individually inside Z&O could be done with SplitText, 
+            // but simple fade up is elegant enough per request.
+            // Let's add a slight scale effect
+            .fromTo(introSign.querySelector('h1'), 
+                { scale: 0.9, filter: "blur(10px)" }, 
+                { scale: 1, filter: "blur(0px)", duration: 1.5, ease: "power2.out" }, "<")
+
+            // Hold Z & O for 3s total (already waited 5s, animation took 1.5s, so wait remaining)
+            .to({}, { duration: 1.5 }) 
+
+            // 3. Hide Z & O
+            .to(introSign, {
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.in"
+            })
+
+            // 4. Show Bismillah
+            .to(introBismillah, {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power2.out"
+            })
+            .fromTo(bismillahLine, 
+                { scaleX: 0 }, 
+                { scaleX: 1, duration: 1.2, ease: "power2.inOut" }, "-=0.5")
+
+            // Hold Bismillah
+            .to({}, { duration: 1.5 })
+
+            // 5. Hide Bismillah & Clouds
+            .to([introBismillah, '.cloud-bg'], {
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.in"
+            })
+
+            // 6. Flash Transition
+            .to(flashOverlay, {
+                opacity: 1,
+                duration: 0.4,
+                ease: "power1.in"
+            })
+            
+            // 7. Reveal Main Content behind flash
+            .set(mainContent, { opacity: 1, y: 0 })
+            .set(introLayer, { display: 'none' }) // Remove intro from DOM flow
+            
+            // 8. Fade out flash to reveal site
+            .to(flashOverlay, {
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.out",
+                onComplete: () => {
+                    flashOverlay.style.display = 'none';
+                }
+            });
+        }
+
+        // --- Clouds Animation (CSS/JS Hybrid) ---
+        function initClouds() {
+            // We use the generated image as background, but let's add some floating divs for depth
+            // The prompt asked for "real readable clouds", the image handles the bulk, 
+            // but we can add subtle movement to the background image itself.
+            
+            gsap.to('.cloud-bg', {
+                scale: 1.1,
+                duration: 20,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        }
+
+        // --- Scroll Animations ---
+        function initScrollAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Animate elements with class .reveal-up
+            const revealElements = document.querySelectorAll('.reveal-up');
+            
+            revealElements.forEach((elem) => {
+                gsap.fromTo(elem, 
+                    { y: 50, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        duration: 1,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: elem,
+                            start: "top 85%",
+                        }
+                    }
+                );
+            });
+        }
+
+        // --- Petals Animation ---
+        function createPetals() {
+            const container = document.getElementById('petals-container');
+            const petalCount = 15; // Not too many, keep it clean
+
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.classList.add('petal');
+                
+                // Randomize size
+                const size = Math.random() * 10 + 10; // 10px to 20px
+                petal.style.width = `${size}px`;
+                petal.style.height = `${size}px`;
+                
+                // Randomize position
+                petal.style.left = `${Math.random() * 100}%`;
+                
+                // Randomize animation duration and delay
+                const duration = Math.random() * 5 + 5; // 5s to 10s
+                const delay = Math.random() * 5;
+                
+                container.appendChild(petal);
+
+                gsap.to(petal, {
+                    y: window.innerHeight + 50,
+                    rotation: Math.random() * 360,
+                    x: `+=${Math.random() * 50 - 25}`, // Slight drift
+                    duration: duration,
+                    delay: delay,
+                    repeat: -1,
+                    ease: "none"
+                });
+            }
+        }
+
+    </script>
+</body>
+</html>
+```
